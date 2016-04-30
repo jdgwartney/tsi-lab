@@ -20,8 +20,9 @@ VirtualMachineStatus() {
   case ${vm_status} in
   *"aborted"*) echo "ABORTED" ;;
   *"not created"*) echo "NOT_CREATED" ;;
-  *"running"*) echo "RUNNING" ;;
   *"poweroff"*) echo "POWERED_OFF";;
+  *"running"*) echo "RUNNING" ;;
+  *"saved"*) echo "SAVED" ;;
   esac
 }
 
@@ -172,7 +173,7 @@ VerifyConfiguration() {
 ExportConfiguration() {
   export TSP_EMAIL
   export TSP_API_TOKEN
-  export TSP_API_HOST="api.truesight-staging.bmc.com"
+  export TSP_API_HOST=${TSP_API_HOST:="api.truesight.bmc.com"}
   export TSI_APP_ID
 }
 
@@ -247,25 +248,25 @@ BuildVirtualMachine() {
 
 Login() {
   case $(VirtualMachineStatus) in
-            NOT_CREATED) echo "Virtual machine not created, run 'vm-create'"         ;;
-    POWERED_OFF|ABORTED) echo "Virtual machine not running, run 'vm-start' first"    ;;
-                RUNNING) exec vagrant ssh                                            ;;
-                      *) echo "Error logging into virtual machine run 'vm-restart' " ;;
+                  NOT_CREATED) echo "Virtual machine not created, run 'vm-create'"         ;;
+    ABORTED|POWERED_OFF|SAVED) echo "Virtual machine not running, run 'vm-start' first"    ;;
+                      RUNNING) exec vagrant ssh                                            ;;
+                            *) echo "Error logging into virtual machine run 'vm-restart' " ;;
   esac
 }
 
 Create() {
   case $(VirtualMachineStatus) in
-            NOT_CREATED) BuildVirtualMachine                                         ;;
-                RUNNING) echo "Virtual machine is running, run 'vm-login' to access" ;;
-    ABORTED|POWERED_OFF) echo "Virtual machine already created, run 'vm-start'"      ;;
+                  NOT_CREATED) BuildVirtualMachine                                         ;;
+                      RUNNING) echo "Virtual machine is running, run 'vm-login' to access" ;;
+    ABORTED|POWERED_OFF|SAVED) echo "Virtual machine already created, run 'vm-start'"      ;;
   esac
 }
 
 Remove() {
   case $(VirtualMachineStatus) in
-                    NOT_CREATED) echo "Virtual machine is not created" ;;
-    ABORTED|POWERED_OFF|RUNNING) vagrant destroy -f 2>&1 > /dev/null ;;
+                           NOT_CREATED) echo "Virtual machine is not created" ;;
+     ABORTED|POWERED_OFF|RUNNING|SAVED) vagrant destroy -f 2>&1 > /dev/null ;;
   esac
 }
 
@@ -276,24 +277,24 @@ Restart() {
 
 Start() {
   case $(VirtualMachineStatus) in
-            NOT_CREATED) echo "Virtual machine not created, run 'vm-create'"                  ;;
-                RUNNING) echo "Virtual machine is already running, run 'vm-login' to access'" ;;
-    ABORTED|POWERED_OFF) vagrant up 2>&1 > /dev/null                                          ;;
+                  NOT_CREATED) echo "Virtual machine not created, run 'vm-create'"                  ;;
+                      RUNNING) echo "Virtual machine is already running, run 'vm-login' to access'" ;;
+    ABORTED|POWERED_OFF|SAVED) vagrant up 2>&1 > /dev/null                                          ;;
   esac
 }
 
 Status() {
   case $(VirtualMachineStatus) in
-                RUNNING) echo "Virtual machine is running"     ;;
-            NOT_CREATED) echo "Virtual machine is not created" ;;
-    ABORTED|POWERED_OFF) echo "Virtual machine is stopped"     ;;
+                      RUNNING) echo "Virtual machine is running"     ;;
+                  NOT_CREATED) echo "Virtual machine is not created" ;;
+    ABORTED|POWERED_OFF|SAVED) echo "Virtual machine is stopped"     ;;
   esac
 }
 
 Stop() {
   case $(VirtualMachineStatus) in
-                             RUNNING) vagrant halt 2>&1 > /dev/null || echo "Error stopping virtual machine" ;;
-    ABORTED| NOT_CREATED|POWERED_OFF) echo "Virtual machine not running"                                     ;;
+                                  RUNNING) vagrant halt 2>&1 > /dev/null || echo "Error stopping virtual machine" ;;
+    ABORTED|NOT_CREATED|POWERED_OFF|SAVED) echo "Virtual machine not running"                                     ;;
   esac
 }
 
@@ -301,7 +302,7 @@ Update() {
    case $(VirtualMachineStatus) in
                               RUNNING) echo "Virtual machine running"                                        ;;
                           NOT_CREATED) echo "Virtual Machine not created. Run './vm-create' first" ; exit 0  ;;
-                  ABORTED|POWERED_OFF) echo "Virtual machine not running starting" ; vagrant up              ;;
+            ABORTED|POWERED_OFF|SAVED) echo "Virtual machine not running starting" ; vagrant up              ;;
    esac
 
    echo "Saving any changes"

@@ -12,6 +12,10 @@ Vagrant.configure(2) do |config|
 
   config.vm.network "forwarded_port", guest: 80, host: 8181
 
+  config.vm.provider "virtualbox" do |v|
+    v.memory = 2048
+  end
+
   # Add the required puppet modules before provisioning is run by puppet
   config.vm.provision :shell do |shell|
       shell.inline = "

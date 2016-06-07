@@ -5,17 +5,22 @@ if [ -f ~/.bashrc ]; then
     . ~/.bashrc
 fi
 
+# Configure Bash shell for VI command line editing
 set -o vi
+
+# Read the TrueSight Intelligence run command file
 if [ -r $HOME/.tsi ]
 then
   source $HOME/.tsi
 fi
 
+# Read the TrueSight Pulse run command file
 if [ -r $HOME/.tsp ]
 then
   source $HOME/.tsp
 fi
 
+# Read the MariaDB configuration
 if [ -r $HOME/.db ]
 then
   source $HOME/.db
@@ -29,10 +34,23 @@ export BOUNDARY_API_HOST=$TSP_API_HOST
 
 export APIHOST_PRE="api.truesight-staging.bmc.com"
 
+# Output the user's credentials stored in environment variables
 alias creds='env | grep TSP'
+# Verify users credentials
 alias check-creds='check-api'
+# Output the user's application id
 alias appid='env | grep TSI_APP_ID'
+# Login into the MariaDB
 alias mysqldb='mysql -u $DB_USER -p$DB_PASSWORD $DB_DATABASE'
+# Display the version of the virtual machine contents
 alias vm-version="cat /vagrant/docs/index.md  | grep version | tr -d '__' | tr -d [a-z] | tr -d ' '"
+
+# Short cut aliases to labs
+alias lab1='cd $HOME/labs/lab-1'
+alias lab2='cd $HOME/labs/lab-2'
+alias lab3='cd $HOME/labs/lab-3'
+alias lab4='cd $HOME/labs/lab-4'
+alias lab5='cd $HOME/labs/lab-5'
+alias lab6='cd $HOME/labs/lab-6'
 
 export PATH=$HOME/bin:$PATH

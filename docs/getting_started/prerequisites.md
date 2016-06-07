@@ -13,7 +13,7 @@ can be downloaded.
 ## Hardware
 
 - Laptop/Desktop running Mac OS X 10.10.5 or later, or Windows 7 or later.
-- Laptop/Desktop must have at least 8GB ram.
+- Laptop/Desktop must have at least 8GB ram. The virtual machine itself allocates 2GB.
 - Laptop/Desktop must have at least 2GB of free disk space.
 
 ## Software

@@ -113,9 +113,9 @@ service { 'http-stressd':
 }
 
 exec { 'http-stressd':
-  command => '/usr/bin/rpm -ivh https://github.com/jdgwartney/boundary-http-stressd/releases/download/RE-01.00.00/boundary-http-stressd-01.00.00-1.noarch.rpm',
+  command => '/bin/rpm -ivh https://github.com/jdgwartney/boundary-http-stressd/releases/download/RE-01.00.00/boundary-http-stressd-01.00.00-1.noarch.rpm',
   require => Package['httpd-tools'],
-  unless => '/usr/bin/rpm -qi boundary-http-stressd',
+  unless => '/bin/rpm -qi boundary-http-stressd',
 }
 
 exec { 'pip-upgrade':
@@ -204,6 +204,7 @@ package { 'jq':
 
 class {'apache': }
 class {'apache::mod::php': }
+class {'apache::mod::status': }
 
 file { 'html':
   path    => '/var/www/html/index.php',
